@@ -1,0 +1,12 @@
+[manager01]
+xx.xx.xxx.105
+
+[worker01]
+xx.xx.xxx.106
+
+[swarm:children]
+manager01
+worker01  
+
+[workers:children]
+worker01

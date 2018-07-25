@@ -1,0 +1,9 @@
+- name: 'install python2'
+  raw: sudo bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qy python-minimal)"
+
+- name: 'update apt cache'
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400
+    
+

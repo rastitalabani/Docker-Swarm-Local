@@ -1,0 +1,29 @@
+#ubuntu swarm configuration
+- name: restart docker daemon
+  command: "{{ item }}"
+  with_items:
+    - systemctl daemon-reload
+    - systemctl restart docker.service    
+
+- name: initiate docker swarm 
+  command: "docker swarm init --advertise-addr {{ groups['manager01'][0] }}"
+  when: inventory_hostname in groups['manager01']
+  ignore_errors: True  
+
+- name: get join token  
+  command: bash -c "docker swarm join-token worker | grep docker | xargs"
+  register: command_output
+  when: inventory_hostname in groups['manager01']  
+
+- set_fact:
+    swarm_join_token: "{{ command_output.stdout }}"
+  when: inventory_hostname in groups['manager01']  
+
+- debug:
+    msg: "{{swarm_join_token}}"
+  when: inventory_hostname in groups['manager01']  
+
+- name: add a worker to swarm 
+  command: "{{ hostvars[groups['manager01'][0]].get('swarm_join_token') }}"
+  when: inventory_hostname in groups['workers']
+  ignore_errors: True
